@@ -1,12 +1,142 @@
-require 'minitest/autorun'
+require_relative 'helper'
 
-class TestCheersIntegration < MiniTest::Unit::TestCase
+class TestCheersIntegration < Minitest::Test
 
-  def test_that_the_test_runs
+  def test_zero_arguments_prints_help_message
     output = `./cheers`
     expected = <<EOS
 I'd cheer for you, if only I knew who you were :(
-try again with './cheers.rb [Name] [MM/DD Birthday]
+Try again with `./cheers.rb [Name] [MM/DD Birthday]
+EOS
+    assert_equal expected, output
+  end
+
+  def test_one_valid_argument
+    output = `./cheers Abby`
+    expected = <<EOS
+Give me an... A
+Give me a... B
+Give me a... B
+Give me a... Y
+Abby’s just GRAND!
+I would wish you a Happy Birthday, if I knew when that was!
+EOS
+    assert_equal expected, output
+  end
+
+  def test_all_an_letters
+    output = `./cheers AEFHILMNORSX`
+    expected = <<EOS
+Give me an... A
+Give me an... E
+Give me an... F
+Give me an... H
+Give me an... I
+Give me an... L
+Give me an... M
+Give me an... N
+Give me an... O
+Give me an... R
+Give me an... S
+Give me an... X
+AEFHILMNORSX’s just GRAND!
+I would wish you a Happy Birthday, if I knew when that was!
+EOS
+    assert_equal expected, output
+  end
+
+  def test_one_valid_argument_with_hyphenated_name
+    output = `./cheers Mary-Jane`
+    expected = <<EOS
+Give me an... M
+Give me an... A
+Give me an... R
+Give me a... Y
+Give me a... J
+Give me an... A
+Give me an... N
+Give me an... E
+Mary-Jane’s just GRAND!
+I would wish you a Happy Birthday, if I knew when that was!
+EOS
+    assert_equal expected, output
+  end
+
+  def test_one_valid_argument_with_double_name
+    output = `./cheers "Mary Jane"`
+    expected = <<EOS
+Give me an... M
+Give me an... A
+Give me an... R
+Give me a... Y
+Give me a... J
+Give me an... A
+Give me an... N
+Give me an... E
+Mary Jane’s just GRAND!
+I would wish you a Happy Birthday, if I knew when that was!
+EOS
+    assert_equal expected, output
+  end
+
+  def test_birthday_instead_of_name
+    output = `./cheers 08/25`
+    expected = <<EOS
+I'd cheer for you, if only I knew who you were :(
+Try again with `./cheers.rb [Name] [MM/DD Birthday]
+EOS
+    assert_equal expected, output
+  end
+
+  def test_only_non_word_characters_in_name
+    output = `./cheers *!?`
+    expected = <<EOS
+I'd cheer for you, if only I knew who you were :(
+Try again with `./cheers.rb [Name] [MM/DD Birthday]
+EOS
+    assert_equal expected, output
+  end
+
+  def test_no_characters_in_name
+    output = `./cheers ""`
+    expected = <<EOS
+I'd cheer for you, if only I knew who you were :(
+Try again with `./cheers.rb [Name] [MM/DD Birthday]
+EOS
+    assert_equal expected, output
+  end
+
+  def test_only_whitespace_in_name
+    output = `./cheers "  "`
+    expected = <<EOS
+I'd cheer for you, if only I knew who you were :(
+Try again with `./cheers.rb [Name] [MM/DD Birthday]
+EOS
+    assert_equal expected, output
+  end
+
+  def test_two_valid_arguments
+    output = `./cheers Abby 08/25`
+    expected = <<EOS
+Give me an... A
+Give me a... B
+Give me a... B
+Give me a... Y
+Abby’s just GRAND!
+Awesome! Your birthday is in 126 days! Happy Birthday in advance!
+EOS
+    assert_equal expected, output
+  end
+
+  def test_with_year
+    output = `./cheers Abby 09/386`
+    expected = <<EOS
+Give me an... A
+Give me a... B
+Give me a... B
+Give me a... Y
+Abby’s just GRAND!
+I would wish you a Happy Birthday, if I knew when that was!
 EOS
     assert_equal expected, output
   end
